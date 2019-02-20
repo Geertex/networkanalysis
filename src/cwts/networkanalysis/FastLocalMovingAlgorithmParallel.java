@@ -4,6 +4,9 @@ import cwts.util.Arrays;
 import java.util.Random;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Fast local moving algorithm.
@@ -90,37 +93,61 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
      */
     protected boolean improveClusteringOneIteration(Network network, Clustering clustering)
     {
-        int numberOfWorkers = 7;
-
         if (network.nNodes == 1)
             return false;
+        int numberOfWorkers = 100;
+
+        boolean run = true;
+
+        LinkedBlockingQueue<Runnable> workerQueue = new LinkedBlockingQueue<Runnable>();
+
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(numberOfWorkers, numberOfWorkers,0L, TimeUnit.MILLISECONDS, workerQueue);
 
         Set<Integer> taskQueue = new LinkedHashSet<Integer>();
 
         ClusterDataManager clusterDataManager = new ClusterDataManager(network, clustering, taskQueue);
 
-        double[] clusterWeights = clusterDataManager.getClusterWeights();
-        int[] nNodesPerCluster = clusterDataManager.getnNodesPerCluster();
+        TaskFactory taskFactory = new TaskFactory(network, clustering, clusterDataManager, resolution);
 
         int[] nodeOrder = Arrays.generateRandomPermutation(network.nNodes, random);
         for (int i = 0; i < nodeOrder.length; i++) {
             taskQueue.add(nodeOrder[i]);
         }
 
-        NodeMover[] workers = new NodeMover[numberOfWorkers];
-        for (NodeMover worker : workers) {
-            worker = new NodeMover(taskQueue, network, clustering, clusterDataManager, clusterWeights, resolution);
-            worker.start();
-        }
-
-        while (!taskQueue.isEmpty()) {
-            synchronized (taskQueue) {
-                try {
-                    taskQueue.wait(1);
-                } catch (InterruptedException ex) {
-                    System.out.println(ex);
+        while (run) {
+            int node = 0;
+            if(!taskQueue.isEmpty()) {
+                synchronized (taskQueue) {
+                    node = taskQueue.iterator().next();
+                    taskQueue.remove(node);
+                }
+                while(workerQueue.size() > 10){
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ex) {
+                        System.out.println(ex);
+                    }
+                }
+                MoveNodeTask task = taskFactory.CreateMoveNodeTask(node);
+                executor.execute(task);
+            }
+            else {
+                synchronized (taskQueue) {
+                    try {
+                        taskQueue.wait(1);
+                    } catch (InterruptedException ex) {
+                        System.out.println(ex);
+                    }
+                }
+                if(taskQueue.isEmpty()) {
+                    run = false;
                 }
             }
+        }
+
+        executor.shutdown();
+
+        while (!executor.isTerminated()) {
         }
 
         boolean update = clusterDataManager.getSomeThingChanged();
