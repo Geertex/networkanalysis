@@ -27,7 +27,7 @@ public class MoveNodeTask implements Runnable {
 	    Object[] arrays = arrayShop.getArrays();
         edgeWeightPerCluster = (double[])arrays[0];
         neighboringClusters = (int[])arrays[1];
-        int arraysNumer = (int)arrays[2];
+        int arraysNumber = (int)arrays[2];
 
 		currentCluster = clustering.clusters[node];
 
@@ -39,7 +39,7 @@ public class MoveNodeTask implements Runnable {
         {
             clusterDataManager.moveNode(currentCluster, bestCluster, node);
         }
-        arrayShop.returnArrays(arraysNumer);
+        arrayShop.returnArrays(arraysNumber);
 	}
 
 	private void findBestCluster() {
