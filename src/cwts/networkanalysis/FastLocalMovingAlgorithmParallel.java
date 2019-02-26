@@ -4,9 +4,7 @@ import cwts.util.Arrays;
 import java.util.Random;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Fast local moving algorithm.
@@ -99,9 +97,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
 
         boolean run = true;
 
-        LinkedBlockingQueue<Runnable> workerQueue = new LinkedBlockingQueue<Runnable>();
-
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(numberOfWorkers, numberOfWorkers,0L, TimeUnit.MILLISECONDS, workerQueue);
+        ForkJoinPool executor = new ForkJoinPool(numberOfWorkers);
 
         ArrayShop arrayShop = new ArrayShop(numberOfWorkers, network.nNodes);
 
@@ -123,7 +119,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
                     node = taskQueue.iterator().next();
                     taskQueue.remove(node);
                 }
-                while(workerQueue.size() > 1000){
+                while(executor.getQueuedSubmissionCount() > 1000){
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException ex) {
