@@ -11,19 +11,24 @@ public class MoveNodeTask implements Runnable {
 	double resolution, maxQualityValueIncrement, qualityValueIncrement;
     int[] neighboringClusters;
     int bestCluster, currentCluster, k, l, nNeighboringClusters, node;
+    ArrayShop arrayShop;
 
-	public MoveNodeTask (Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int node) {
+	public MoveNodeTask (Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int node, ArrayShop arrayShop) {
 		this.network = network;
 		this.clustering = clustering;
 		this.clusterDataManager = clusterDataManager;
 		this.clusterWeights = clusterWeights;
 		this.resolution = resolution;
 		this.node = node;
-		edgeWeightPerCluster = new double[network.nNodes];
-    	neighboringClusters = new int[network.nNodes];
+		this.arrayShop = arrayShop;
 	}
 
 	public void run() {
+	    Object[] arrays = arrayShop.getArrays();
+        edgeWeightPerCluster = (double[])arrays[0];
+        neighboringClusters = (int[])arrays[1];
+        int arraysNumer = (int)arrays[2];
+
 		currentCluster = clustering.clusters[node];
 
         identifyNeighbours();
@@ -34,6 +39,7 @@ public class MoveNodeTask implements Runnable {
         {
             clusterDataManager.moveNode(currentCluster, bestCluster, node);
         }
+        arrayShop.returnArrays(arraysNumer);
 	}
 
 	private void findBestCluster() {

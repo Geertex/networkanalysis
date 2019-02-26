@@ -95,7 +95,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
     {
         if (network.nNodes == 1)
             return false;
-        int numberOfWorkers = 10;
+        int numberOfWorkers = 7;
 
         boolean run = true;
 
@@ -103,11 +103,13 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
 
         ThreadPoolExecutor executor = new ThreadPoolExecutor(numberOfWorkers, numberOfWorkers,0L, TimeUnit.MILLISECONDS, workerQueue);
 
+        ArrayShop arrayShop = new ArrayShop(numberOfWorkers, network.nNodes);
+
         Set<Integer> taskQueue = new LinkedHashSet<Integer>();
 
         ClusterDataManager clusterDataManager = new ClusterDataManager(network, clustering, taskQueue);
 
-        TaskFactory taskFactory = new TaskFactory(network, clustering, clusterDataManager, resolution);
+        TaskFactory taskFactory = new TaskFactory(network, clustering, clusterDataManager, resolution, arrayShop);
 
         int[] nodeOrder = Arrays.generateRandomPermutation(network.nNodes, random);
         for (int i = 0; i < nodeOrder.length; i++) {
