@@ -123,7 +123,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
                     node = taskQueue.iterator().next();
                     taskQueue.remove(node);
                 }
-                while(workerQueue.size() > 1000){
+                while(workerQueue.size() > 100000){
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException ex) {
