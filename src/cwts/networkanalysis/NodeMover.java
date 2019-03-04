@@ -1,20 +1,15 @@
 package cwts.networkanalysis;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 public class NodeMover extends Thread {
-	Set<Integer> taskQueue;
 	Network network;
 	Clustering clustering;
 	ClusterDataManager clusterDataManager;
 	double[] clusterWeights, edgeWeightPerCluster;
 	double resolution, maxQualityValueIncrement, qualityValueIncrement;
-    int[] neighboringClusters;
-    int bestCluster, currentCluster, k, l, nNeighboringClusters, node;
+    int[] neighboringClusters, threadQueue;
+    int bestCluster, currentCluster, k, l, nNeighboringClusters;
 
-	public NodeMover (Set<Integer> taskQueue, Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution) {
-		this.taskQueue = taskQueue;
+	public NodeMover (Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int[] threadQueue) {
 		this.network = network;
 		this.clustering = clustering;
 		this.clusterDataManager = clusterDataManager;
@@ -22,37 +17,29 @@ public class NodeMover extends Thread {
 		this.resolution = resolution;
 		edgeWeightPerCluster = new double[network.nNodes];
     	neighboringClusters = new int[network.nNodes];
+    	this.threadQueue = threadQueue;
 	}
 
 	public void run() {
-		while (true) {
-			synchronized (taskQueue) {
-				if(!taskQueue.isEmpty()) {
-					node = taskQueue.iterator().next();
-					taskQueue.remove(node);
-				}
-				else {
-					return;
-				}
-			}
-			optimizeNodeCluster();
+		for(int node: threadQueue) {
+			optimizeNodeCluster(node);
 		}
 	}
 
-	private void optimizeNodeCluster() {
+	private void optimizeNodeCluster(int node) {
         currentCluster = clustering.clusters[node];
 
-        identifyNeighbours();
+		identifyNeighbours(node);
 
-        findBestCluster();
+		findBestCluster(node);
 
-        if (bestCluster != currentCluster)
-        {
-            clusterDataManager.moveNode(currentCluster, bestCluster, node);
-        }
+		if (bestCluster != currentCluster)
+		{
+			clusterDataManager.moveNode(currentCluster, bestCluster, node);
+		}
 	}
 
-	private void findBestCluster() {
+	private void findBestCluster(int node) {
 		bestCluster = currentCluster;
         maxQualityValueIncrement = edgeWeightPerCluster[currentCluster] - network.nodeWeights[node] * (clusterWeights[currentCluster]-network.nodeWeights[node]) * resolution;
         for (k = 0; k < nNeighboringClusters; k++)
@@ -69,7 +56,7 @@ public class NodeMover extends Thread {
         }
 	}
 
-	private void identifyNeighbours() {
+	private void identifyNeighbours(int node) {
 		neighboringClusters[0] = clusterDataManager.getNextUnusedCluster();
         nNeighboringClusters = 1;
         
