@@ -95,7 +95,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
     {
         if (network.nNodes == 1)
             return false;
-        int numberOfWorkers = 7;
+        int numberOfWorkers = 10;
 
         boolean run = true;
 

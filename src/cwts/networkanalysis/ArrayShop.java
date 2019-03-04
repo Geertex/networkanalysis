@@ -5,6 +5,7 @@ public class ArrayShop {
     int[][] integerArrays;
     boolean[] bookings;
     int numberOfArrays, numberOfNodes;
+    ArrayBundle[] arrayBundles;
 
     ArrayShop(int numberOfArrays, int numberOfNodes) {
         doubleArrays = new double[numberOfArrays][numberOfNodes];
@@ -12,16 +13,20 @@ public class ArrayShop {
         bookings = new boolean[numberOfArrays];
         this.numberOfArrays = numberOfArrays;
         this.numberOfNodes = numberOfNodes;
+        arrayBundles = new ArrayBundle[numberOfArrays];
+        for(int i = 0; i <numberOfArrays; i++){
+            arrayBundles[i] = new ArrayBundle(doubleArrays[i],integerArrays[i], i);
+        }
     }
 
-    public Object[] getArrays(){
+    public ArrayBundle getArrays(){
         for(int i = 0; i <numberOfArrays; i++){
             if(!bookings[i]){
                 bookings[i] = true;
-                return new Object[]{doubleArrays[i],integerArrays[i], i};
+                return arrayBundles[i];
             }
         }
-        return new Object[]{null, null, null};
+        return null;
     }
 
     public void returnArrays(int arraysNumber){
