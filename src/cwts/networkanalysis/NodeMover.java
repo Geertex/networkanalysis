@@ -9,14 +9,14 @@ public class NodeMover extends Thread {
     int[] neighboringClusters, threadQueue;
     int bestCluster, currentCluster, k, l, nNeighboringClusters;
 
-	public NodeMover (Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int[] threadQueue) {
+	public NodeMover (Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double[] edgeWeightPerCluster, int[] neighboringClusters, double resolution, int[] threadQueue) {
 		this.network = network;
 		this.clustering = clustering;
 		this.clusterDataManager = clusterDataManager;
 		this.clusterWeights = clusterWeights;
 		this.resolution = resolution;
-		edgeWeightPerCluster = new double[network.nNodes];
-    	neighboringClusters = new int[network.nNodes];
+		this.edgeWeightPerCluster = edgeWeightPerCluster;
+		this.neighboringClusters = neighboringClusters;
     	this.threadQueue = threadQueue;
 	}
 
