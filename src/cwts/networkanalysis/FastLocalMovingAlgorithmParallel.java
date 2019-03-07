@@ -96,7 +96,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
         long start = System.nanoTime();
         if (network.nNodes == 1)
             return false;
-        int numberOfWorkers = 10;
+        int numberOfWorkers = 7;
 
         boolean run = true;
 
