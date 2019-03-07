@@ -108,7 +108,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
         }
 
         double[][] edgeWeightPerClusterArrays = new double[numberOfWorkers][network.nNodes];
-        int[][] neighboringClustersnewArrays = new int[numberOfWorkers][network.nNodes];
+        int[][] neighboringClustersArrays = new int[numberOfWorkers][network.nNodes];
 
         while(!taskQueue.isEmpty()) {
             int queueLength = (taskQueue.size() + numberOfWorkers - 1) / numberOfWorkers;
@@ -123,7 +123,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
 
             NodeMover[] workers = new NodeMover[numberOfWorkers];
             for (int i = 0; i < numberOfWorkers; i++) {
-                workers[i] = new NodeMover(network, clustering, clusterDataManager, clusterWeights, edgeWeightPerClusterArrays[i], neighboringClustersnewArrays[i], resolution, taskQueues[i]);
+                workers[i] = new NodeMover(network, clustering, clusterDataManager, clusterWeights, edgeWeightPerClusterArrays[i], neighboringClustersArrays[i], resolution, taskQueues[i]);
                 workers[i].start();
             }
 
