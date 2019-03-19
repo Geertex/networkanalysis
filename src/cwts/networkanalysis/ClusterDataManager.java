@@ -103,10 +103,10 @@ public class ClusterDataManager {
         for (int k = network.firstNeighborIndices[j]; k < network.firstNeighborIndices[j + 1]; k++) {
             if (clustering.clusters[network.neighbors[k]] != clusterB)
             {
-                synchronized (taskQueue){
+                //synchronized (taskQueue){
                     taskQueue.add(network.neighbors[k]);
                     //taskQueue.notify();
-                }
+                //}
             }
         }
         

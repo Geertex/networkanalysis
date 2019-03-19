@@ -4,6 +4,7 @@ import cwts.util.Arrays;
 import java.util.Random;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Fast local moving algorithm.
@@ -115,12 +116,14 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
             int queueLength = (taskQueue.size() + numberOfWorkers - 1) / numberOfWorkers;
             int[][] taskQueues = new int[numberOfWorkers][queueLength];
 
-            int node = 0;
-            for (int i = 0; i < taskQueue.size(); i++) {
-                node = taskQueue.iterator().next();
-                taskQueues[i % numberOfWorkers][i / numberOfWorkers] = node;
-                taskQueue.remove(node);
+            int x = 0;
+            Iterator taskIterator = taskQueue.iterator();
+            while(taskIterator.hasNext() && x < taskQueue.size()) {
+                taskQueues[x % numberOfWorkers][x / numberOfWorkers] = (int) taskIterator.next();
+                x++;
             }
+
+            taskQueue.clear();
 
             NodeMover[] workers = new NodeMover[numberOfWorkers];
             for (int i = 0; i < numberOfWorkers; i++) {
