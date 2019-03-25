@@ -2,7 +2,7 @@ package cwts.networkanalysis;
 
 import cwts.util.Arrays;
 import java.util.Random;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
 
@@ -97,7 +97,7 @@ public class FastLocalMovingAlgorithmParallel extends IterativeCPMClusteringAlgo
         if (network.nNodes == 1)
             return false;
 
-        Set<Integer> taskQueue = new LinkedHashSet<Integer>();
+        Set<Integer> taskQueue = new HashSet<Integer>();
 
         ClusterDataManager clusterDataManager = new ClusterDataManager(network, clustering, taskQueue);
 
