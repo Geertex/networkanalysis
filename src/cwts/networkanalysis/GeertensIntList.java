@@ -109,9 +109,9 @@ public class GeertensIntList{
         this.tail = tail;
     }
 
-    public GeertensIntList popSubList(int sublistSize){
+    public GeertensIntList popSubList(int fraction){
         GeertensIntList subList = new GeertensIntList();
-        if(sublistSize + 2 >= size){
+        if(2*fraction >= size || fraction == 1){
             subList.setSize(size);
             subList.setHead(head);
             subList.setTail(tail);
@@ -120,17 +120,18 @@ public class GeertensIntList{
             tail = null;
         }
         else {
-            subList.setSize(sublistSize);
+            int newSize = (size+fraction-1) / fraction;
+            subList.setSize(newSize);
             subList.setHead(head);
             Node pointer = head;
-            for(int i = 1; i < sublistSize; i++){
+            for(int i = 1; i < newSize; i++){
                 pointer = pointer.getNextNode();
             }
             subList.setTail(pointer);
             head = pointer.getNextNode();
             pointer.setNextNode(null);
             head.setPrevNode(null);
-            size -= sublistSize;
+            size -= newSize;
         }
         return subList;
     }
