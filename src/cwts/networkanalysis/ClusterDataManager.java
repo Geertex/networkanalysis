@@ -56,11 +56,6 @@ public class ClusterDataManager {
         return nNodesPerCluster;
     }
 
-    // public synchronized void markDone (int node) {
-    //     stableNodes[node] = true;
-    //     nUnstableNodes--;
-    // }
-
     public int getNextUnusedCluster () {
         return unusedClusters[nUnusedClusters - 1];
     }
@@ -68,13 +63,6 @@ public class ClusterDataManager {
     public boolean getSomeThingChanged () {
         return someThingChanged;
     }
-
-    // public synchronized QueueElement getNextUnstableNode () {
-    //     int nodeNumber = nodeOrder[nextNode];
-    //     QueueElement node = new QueueElement(nextNode, nodeNumber);
-    //     nextNode = (nextNode < network.nNodes - 1) ? (nextNode + 1) : 0;
-    //     return node;
-    // }
 
     public GeertensIntList moveNode(int clusterA, int clusterB, int j) {
         nodeNotInQueue[j] = true;
@@ -93,7 +81,6 @@ public class ClusterDataManager {
                 nUnusedClusters--;
             }
 
-
             clustering.clusters[j] = clusterB;
             if (clusterB >= clustering.nClusters)
                 clustering.nClusters = clusterB + 1;
@@ -102,15 +89,11 @@ public class ClusterDataManager {
 
             for (int k = network.firstNeighborIndices[j]; k < network.firstNeighborIndices[j + 1]; k++) {
                 neighbor = network.neighbors[k];
-                if (clustering.clusters[network.neighbors[k]] != clusterB && nodeNotInQueue[neighbor]) {
+                if (clustering.clusters[neighbor] != clusterB && nodeNotInQueue[neighbor]) {
                     nodeNotInQueue[neighbor] = false;
                     newQueueElements.add(network.neighbors[k]);
                 }
             }
-
-            /*synchronized (taskQueue) {
-                taskQueue.addAll(newQueueElements);
-            }*/
 
             someThingChanged = true;
         }

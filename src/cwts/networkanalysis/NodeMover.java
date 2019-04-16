@@ -11,7 +11,7 @@ public class NodeMover extends Thread {
     int[] neighboringClusters;
     int bestCluster, currentCluster, k, l, nNeighboringClusters, numberOfWorkers;
 
-	public NodeMover (GeertensIntList taskQueue, Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int numberOfWorkers) {
+	public NodeMover (GeertensIntList taskQueue, Network network, Clustering clustering, ClusterDataManager clusterDataManager, double[] clusterWeights, double resolution, int numberOfWorkers, GeertensIntList threadQueue) {
 		this.taskQueue = taskQueue;
 		this.network = network;
 		this.clustering = clustering;
@@ -19,12 +19,14 @@ public class NodeMover extends Thread {
 		this.clusterWeights = clusterWeights;
 		this.resolution = resolution;
 		this.numberOfWorkers = numberOfWorkers;
+		this.threadQueue = threadQueue;
 		edgeWeightPerCluster = new double[network.nNodes];
     	neighboringClusters = new int[network.nNodes];
 	}
 
 	public void run() {
 		while (true) {
+			processQueue();
 			synchronized (taskQueue) {
 				if(!taskQueue.isEmpty()) {
 					threadQueue = taskQueue.popSubList(numberOfWorkers);
@@ -33,7 +35,6 @@ public class NodeMover extends Thread {
 					return;
 				}
 			}
-			processQueue();
 		}
 	}
 
