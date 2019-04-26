@@ -297,27 +297,27 @@ public final class RunNetworkClustering
         // Read edge list from file.
         System.err.println("Reading " + (sortedEdgeList ? "sorted " : "") + "edge list from '" + edgeListFilename + "'.");
         long startTimeEdgeListFile = System.currentTimeMillis();
-        //Network network = readEdgeList(edgeListFilename, useModularity, weightedEdges, sortedEdgeList);
-        Network network = null;
+        Network network = readEdgeList(edgeListFilename, useModularity, weightedEdges, sortedEdgeList);
+        /*Network network = null;
         try {
             network = Network.load(edgeListFilename);
         }
         catch (Exception e) {
             System.err.print(e);
             System.exit(-1);
-        }
+        }*/
         System.err.println("Reading " + (sortedEdgeList ? "sorted " : "") + "edge list took " + (System.currentTimeMillis() - startTimeEdgeListFile) / 1000 + "s.");
         System.err.println("Network consists of " + network.getNNodes() + " nodes and " + network.getNEdges() + " edges" + (weightedEdges ? " with a total edge weight of " + network.getTotalEdgeWeight() : "") + ".");
 
-        /*/get largest component and save network
+        //get largest component and save network
         network =  network.createSubnetworkLargestComponent();
         try{
             network.save(edgeListFilename.replace(".txt" , ".ser"));
         }
         catch (Exception e){
             System.err.println(e);
-        }*/
-
+        }
+        /*
         // Read initial clustering from file.
         Clustering initialClustering = null;
         if (initialClusteringFilename == null)
@@ -372,7 +372,7 @@ public final class RunNetworkClustering
 
         // Write final clustering to file (or to standard output).
         System.err.println("Writing final clustering to " + ((finalClusteringFilename == null) ? "standard output." : "'" + finalClusteringFilename + "'."));
-        writeClustering(finalClusteringFilename, finalClustering);
+        writeClustering(finalClusteringFilename, finalClustering);*/
     }
 
     /**
