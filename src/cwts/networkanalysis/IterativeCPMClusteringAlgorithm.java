@@ -1,5 +1,11 @@
 package cwts.networkanalysis;
 
+import java.nio.file.Files;
+import java.io.File;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 /**
  * Abstract base class for iterative clustering algorithms that use the CPM
  * quality function.
@@ -86,12 +92,48 @@ public abstract class IterativeCPMClusteringAlgorithm extends IncrementalCPMClus
         int i;
 
         update = false;
-        if (nIterations > 0)
-            for (i = 0; i < nIterations; i++)
+        if (nIterations > 1) {
+            String times = "duration 0";
+            String qualities = "quality 0";
+            long time = 0;
+            for (i = 0; i < nIterations; i++) {
+                long start = System.nanoTime();
                 update |= improveClusteringOneIteration(network, clustering);
-        else
+                long duration = System.nanoTime() - start;
+                time += duration;
+                times = times + " " + time;
+                double quality = calcQuality(network, clustering);
+                qualities = qualities + " " + quality;
+            }
+            times = times + '\n';
+            qualities = qualities.replace('.', ',') + '\n';
+            System.out.println(times);
+            System.out.println(qualities);
+            String filename = "measurements.txt";
+            Path path = Paths.get(filename);
+            if (Files.notExists(path)) {
+                File file = new File(filename);
+                try {
+                    file.createNewFile();
+                }
+                catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
+            if (Files.exists(path)) {
+                try {
+                    Files.write(Paths.get(filename), times.getBytes(), StandardOpenOption.APPEND);
+                    Files.write(Paths.get(filename), qualities.getBytes(), StandardOpenOption.APPEND);
+                }catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
+        }
+        else if(nIterations == 1) update |= improveClusteringOneIteration(network, clustering);
+        else {
             while (improveClusteringOneIteration(network, clustering))
                 update = true;
+        }
         return update;
     }
 
