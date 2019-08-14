@@ -397,48 +397,43 @@ public final class RunNetworkClustering
         BufferedReader reader = null;
         try
         {
+            Random random = new Random();
             reader = new BufferedReader(new FileReader(filename));
             String line = reader.readLine();
             int lineNo = 0;
             while (line != null)
             {
                 lineNo++;
-                String[] columns = line.split(COLUMN_SEPARATOR);
-                if ((!weightedEdges && ((columns.length < 2) || (columns.length > 3))) || (weightedEdges && (columns.length != 3)))
-                    throw new IOException("Incorrect number of columns (line " + lineNo + ").");
+                if(random.nextDouble()>0.25){
+                    String[] columns = line.split(COLUMN_SEPARATOR);
+                    if ((!weightedEdges && ((columns.length < 2) || (columns.length > 3))) || (weightedEdges && (columns.length != 3)))
+                        throw new IOException("Incorrect number of columns (line " + lineNo + ").");
 
-                int node1;
-                int node2;
-                try
-                {
-                    node1 = Integer.parseUnsignedInt(columns[0]);
-                    node2 = Integer.parseUnsignedInt(columns[1]);
-                }
-                catch (NumberFormatException e)
-                {
-                    throw new IOException("Node must be represented by a zero-index integer number (line " + lineNo + ").");
-                }
-                edges[0].append(node1);
-                edges[1].append(node2);
-                if (node1 >= nNodes)
-                    nNodes = node1 + 1;
-                if (node2 >= nNodes)
-                    nNodes = node2 + 1;
-
-                if (weightedEdges)
-                {
-                    double weight;
-                    try
-                    {
-                        weight = Double.parseDouble(columns[2]);
+                    int node1;
+                    int node2;
+                    try {
+                        node1 = Integer.parseUnsignedInt(columns[0]);
+                        node2 = Integer.parseUnsignedInt(columns[1]);
+                    } catch (NumberFormatException e) {
+                        throw new IOException("Node must be represented by a zero-index integer number (line " + lineNo + ").");
                     }
-                    catch (NumberFormatException e)
-                    {
-                        throw new IOException("Edge weight must be a number (line " + lineNo + ").");
-                    }
-                    edgeWeights.append(weight);
-                }
+                    edges[0].append(node1);
+                    edges[1].append(node2);
+                    if (node1 >= nNodes)
+                        nNodes = node1 + 1;
+                    if (node2 >= nNodes)
+                        nNodes = node2 + 1;
 
+                    if (weightedEdges) {
+                        double weight;
+                        try {
+                            weight = Double.parseDouble(columns[2]);
+                        } catch (NumberFormatException e) {
+                            throw new IOException("Edge weight must be a number (line " + lineNo + ").");
+                        }
+                        edgeWeights.append(weight);
+                    }
+                }
                 line = reader.readLine();
             }
         }
